@@ -15,34 +15,6 @@ def nth_root(n,z):
 root1=nth_root(3,z1)
 root2=nth_root(5,z2)
 
-
-for num in root1:
-    plt.plot([0,num.real],[0,num.imag])
-for num in root2:
-    plt.plot([0,num.real],[0,num.imag])
-plt.show()
-
-
-import cmath as M
-import matplotlib.pyplot as plt
-import numpy as np
-
-z1 = 2 + 3j
-z2 = 2 - 5j
-
-def nth_root(n, z):
-    roots = []
-    r = abs(z)
-    theta = M.phase(z)
-    for i in range(n):
-        angle = (theta + 2*M.pi*i) / n
-        root = pow(r, 1/n) * M.exp(1j*angle)
-        roots.append(root)
-    return roots
-
-root1 = nth_root(3, z1)
-root2 = nth_root(5, z2)
-
 # --------- Plot for first number ----------
 plt.figure(figsize=(6,6))
 for idx, num in enumerate(root1, 1):
