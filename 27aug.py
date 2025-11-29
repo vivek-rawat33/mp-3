@@ -1,4 +1,3 @@
-#To transform complex numbers as 2-D vectors e.g. rotation, reflection
 
 import numpy as np
 import matplotlib.pyplot as plt

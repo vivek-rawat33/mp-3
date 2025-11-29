@@ -1,7 +1,8 @@
 from numpy import *
 from cmath import *
 from matplotlib.pyplot import *
-
+import math as M
+# exp 6
 # Small DFT example
 N = 4
 f = [0,1,4,9]
@@ -17,12 +18,19 @@ def dft(N, f):
     return Fk
 
 fk = dft(N,f)
-print("values of F(k):")
-for i in fk:
-    print(complex(i.real, i.imag))
+X_numpy = np.fft.fft(f)
+print("Input Signal f[n]:", f)
+print("\nManual DFT X[k]:")
+for k, Xk in enumerate(fk):
+    print(f"X[{k}] = {Xk:.2f}")
 
+print("\nNumPy DFT X[k]:")
+for k, Xk in enumerate(X_numpy):
+    print(f"X[{k}] = {Xk:.2f}")
+    
+    
 # DFT of function x*exp(-x)
-fn = lambda x: x*exp(-x)
+fn = lambda x: x*M.exp(-x)
 N = 128
 a, b = 0, 8
 

@@ -2,7 +2,7 @@
 import math as M
 import matplotlib.pyplot as plt
 import numpy as np
-
+#exp 4
 # original complex numbers
 z = [2+1j, -3+2j, -1-3j]
 

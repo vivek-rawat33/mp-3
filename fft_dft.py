@@ -1,6 +1,6 @@
 from numpy import *
 from matplotlib.pyplot import *
-
+#exp 7 
 fn = lambda t: 3*sin(2*pi*t) + sin(8*pi*t) + 0.5*sin(14*pi*t)
 gn= lambda t: exp(-t**2)
 def dft(f, N, a, b):
