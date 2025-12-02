@@ -51,14 +51,13 @@ def plot_dft(N, fn, a, b):
     # Plot magnitude of DFT
     subplot(1,2,2)
     k = range(N)
-    #plot(k, [abs(val) for val in fk], label="|F(k)|")
+    # plot(k, [abs(val) for val in fk], label="|F(k)|")
     stem(k, [abs(val) for val in fk], label="|F(k)|")
     xlabel("k")
     ylabel("|F(k)|")
     title("DFT Magnitude")
     grid(True)
     legend()
-    
     show()
 
 plot_dft(N, fn, a, b)
