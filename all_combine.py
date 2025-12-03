@@ -56,7 +56,7 @@ roots = nth_root(z1,3)
 print(f"roots are {roots}")
 
 for root in roots:
-    plt.plot([0,root.real],[0,root.imag] ,label=f"root {root}")
+    plt.plot([0,root.real],[0,root.imag] ,label=f"root {complex(round(root.real,3),round(root.imag,3))}")
 plt.title(f"roots of complex {z1}")
 plt.grid(True)
 plt.legend()
@@ -100,8 +100,8 @@ def plotting(fz,z):
         plt.grid(True)
         plt.legend()
     plt.show()
-# plotting(fz1,z1)
-# plotting(fz2,z2)
+plotting(fz1,z1)
+plotting(fz2,z2)
 
 
 ##################################################################################################################
@@ -363,6 +363,34 @@ gn = lambda x: x*M.exp(M.cos(x) + M.sin(x))
 # print("3-point Gauss:", gauss3(gn, 0, 1))
 
 
+
+#simpson integration
+import math as M
+def simpson_integration(f, a, b, n):
+    if n % 2 == 1:
+       print("Number of subintervals must be even.")
+       return 
+
+    h = (b - a) / n
+    x = a
+    integral = f(x) + f(b)
+
+    for i in range(1, n):
+        x += h
+        if i % 2 == 0:
+            integral += 2 * f(x)
+        else:
+            integral += 4 * f(x)
+
+    integral *= h / 3
+    return integral
+def example_function(x):  
+    return M.log(M.sin(x))
+a =float(input("enter the lower limit :"))
+b =float(input("enter the upper limit :"))
+n = int(input("enter the number of iterations :"))
+result = simpson_integration(example_function, a, b, n)
+print("The integral is:", result)
 
 ######################################################################################################################
 
