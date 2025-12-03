@@ -66,7 +66,7 @@ plt.show()
 
 
 ##############################################################################################################
-#f(z) = z^2 function plot 
+#f(z) = z^2 function plot   
 x1 = np.linspace(-10,10,100)
 x2 = np.linspace(-1,2,100)
 y1 = np.linspace(-10,10,100)
@@ -100,8 +100,8 @@ def plotting(fz,z):
         plt.grid(True)
         plt.legend()
     plt.show()
-plotting(fz1,z1)
-plotting(fz2,z2)
+# plotting(fz1,z1)
+# plotting(fz2,z2)
 
 
 ##################################################################################################################
@@ -215,7 +215,11 @@ def compare_fft(k,fft_signal,dft_signal):
 # error2 = compare_fft(k2,fft_signal2,dft_signal2)
 # print(f"error between dft and fft is {error1} of function f=3sin(2pit) + sin(8pit) + 0.5sin(14pit) \nerror between dft and fft is {error2} of function f = e^(-t^2)")
     
+    
+    
 ##########################################################################################################################
+
+
 
 #reflection rotation translation scaling 
 # original complex numbers
@@ -228,6 +232,7 @@ def reflection_origin(z): return [-zi.real - zi.imag*1j for zi in z]
 def translation(z, a, b): return [(zi.real+a) + (zi.imag+b)*1j for zi in z]
 def scaling(z, a, b): return [(zi.real*a) + (zi.imag*b)*1j for zi in z]
 
+#rotation
 def rotation(z, theta):
     angle = M.radians(theta)
     ans = []
@@ -237,6 +242,7 @@ def rotation(z, theta):
         ans.append(x + y*1j)
     return ans
 
+#rotation and translation
 def rotation_and_translation(z, theta, a, b):
     return translation(rotation(z, theta), a, b)
 
@@ -267,7 +273,7 @@ def plot_transform(z_before_list, z_after_list, title="Transformation"):
 
 # Example runs
 # plot_transform(z, translation(z, 2, 3), "Translation (a=2, b=3)")
-plot_transform(z, rotation(z, 30), "Rotation (30°)")
+# plot_transform(z, rotation(z, 30), "Rotation (30°)")
 # plot_transform(z, scaling(z, 2, 3), "Scaling (a=2, b=3)")
 # plot_transform(z, y_reflection(z), "Reflection about Y-axis")
 # plot_transform(z, x_reflection(z), "Reflection about X-axis")
@@ -283,7 +289,32 @@ def z_rotate(z,theta):
         z_rotated = r*exp(1j*angle)
         z_rot.append(z_rotated)
     return z_rot
-plot_transform(z, z_rotate(z, 30), "Rotation (30°) re^(t1 + t2)i")
+# plot_transform(z, z_rotate(z, 30), "Rotation (30°) re^(t1 + t2)i")
+
+
+
+
+#cirlce of radius 1 |z| = (x^2 + y ^2)^(1/2) = r = 1 so z = (1)e^(i*theta)
+r = 1
+theta = np.linspace(0,2*M.pi,100)
+z = r*np.exp(1j*theta)
+z_real = z.real
+z_imag = z.imag
+plt.plot(z_real ,z_imag,label="circle")
+plt.plot([0,z_real[10]],[0,z_imag[10]],color="red",label="radius")
+plt.plot([0,z_real[0]],[0,z_imag[0]],color="red")
+plt.title("circle of radius 1 |z| = 1")
+plt.legend()
+plt.grid(True)
+plt.xlabel("real axis")
+plt.ylabel("imaginary axis")
+plt.axis("equal")
+plt.show()
+
+
+#######################################################################################################################
+
+
 
 #integral 
 # ------------------------
@@ -326,7 +357,95 @@ def gauss3(fn, a, b):
 fn = lambda x: 5*x**3 - 4*x**2 + 7*x + 10
 gn = lambda x: x*M.exp(M.cos(x) + M.sin(x))
 # 2-point Gauss
-print("2-point Gauss:", gauss2(fn, 2, 5))
+# print("2-point Gauss:", gauss2(fn, 2, 5))
 
 # 3-point Gauss
-print("3-point Gauss:", gauss3(gn, 0, 1))
+# print("3-point Gauss:", gauss3(gn, 0, 1))
+
+
+
+######################################################################################################################
+
+
+# Coefficients
+pn = lambda x: 0
+qn = lambda x: 0
+rn = lambda x: -9.8
+
+# Domain and boundary conditions
+a, b = 0, 5
+y0, y5 = 50, M.sqrt(10)
+
+# Grid
+n = int(input("enter n:"))             # number of sub-intervals
+h = (b - a) / n
+x = np.linspace(a, b, n+1)  # n+1 points including boundaries
+x_ = np.linspace(a, b, 50)  # n+1 points including boundaries
+
+# Matrix for interior points (size n-1)
+A = np.zeros((n-1, n-1))
+r = np.zeros(n-1)
+
+# Fill RHS for interior points
+for i in range(1, n):
+    r[i-1] = h**2 * rn(x[i])
+
+# Fill matrix A using finite difference coefficients
+for i in range(n-1):
+    xi = x[i+1]  # interior x
+    if i > 0:
+        A[i, i-1] = 1 - h/2 * pn(xi)
+    A[i, i] = -2 + h**2 * qn(xi)
+    if i < n-2:
+        A[i, i+1] = 1 + h/2 * pn(xi)
+# Apply boundary contributions
+r[0] -= (1 - h/2 * pn(x[1])) * y0
+r[-1] -= (1 + h/2 * pn(x[n-1])) * y5
+
+# Solve system
+y_interior = np.linalg.solve(A, r)
+
+# Append boundary values
+y_fdm = np.zeros(n+1)
+y_fdm[0] = y0
+y_fdm[1:n] = y_interior
+y_fdm[n] = y5
+
+# Analytic solution for comparison
+y_exact = -4.9 * x_**2 + 15.1324555 * x_ + 50
+
+# Plot
+plt.plot(x_, y_exact, label="Analytic Solution", linestyle='--')
+plt.plot(x, y_fdm, label="Finite Difference Solution")
+plt.xlabel("time(in seconds)")
+plt.ylabel("(displacement(in m))")
+plt.title("FDM vs Analytic Solution")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+#original plot
+y0 = 50.0
+t1 = 5.0
+y1 = sqrt(10)
+
+# compute g from y(5) = 50 - 0.5*g*5^2
+g = 2*(y0 - y1) / (t1**2)
+
+def y(t):
+    return y0 - 0.5 * g * t**2
+
+print("g =", g)
+print("y(0) =", y(0))
+print("y(5) =", y(5), " (target:", y1, ")")
+
+# optional: plot
+t = np.linspace(0, 6, 200)
+plt.plot(t, y(t))
+plt.scatter([0, 5], [y(0), y(5)], color="red")
+plt.xlabel("t")
+plt.ylabel("y(t)")
+plt.grid(True)
+plt.show()
