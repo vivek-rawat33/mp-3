@@ -30,6 +30,7 @@ def argument(z):
             arg += M.pi if y > 0 else -M.pi
 
     print(f"argument of the complex {z} is {arg}")
+    return arg
 argument(z3)
 print(f"difference between inbuilt and function defined {abs(argument(z3) - phase(z3))}")
         
@@ -162,8 +163,8 @@ def dft_plotting(k,dft_signal,x,fx,title):
     plt.xlabel("k")
     plt.ylabel("|F(k)|")
     plt.show()
-dft_plotting(k,dft_signal,x,fx,"DFT manual")
-dft_plotting(k,fft_signal,x,fx,"FFT inbuilt")
+# dft_plotting(k,dft_signal,x,fx,"DFT manual")
+# dft_plotting(k,fft_signal,x,fx,"FFT inbuilt")
 
 
 # f = 3sin(2pit) + sin(8pit) + 0.5sin(14pit)
@@ -175,8 +176,8 @@ fx = [fn(x) for x in x]
 dft_signal1 = dft_transform(fx)
 k1 = range(N)
 fft_signal1 = np.fft.fft(fx)
-dft_plotting(k1,dft_signal1,x,fx,"Manual")
-dft_plotting(k1,fft_signal1,x,fx,"inbuilt")
+# dft_plotting(k1,dft_signal1,x,fx,"Manual")
+# dft_plotting(k1,fft_signal1,x,fx,"inbuilt")
 
 
 #g = e^(-t^2)
@@ -188,8 +189,8 @@ gt = [ gn(t) for t in t ]
 dft_signal2 = dft_transform(gt)
 k2 = range(N)
 fft_signal2 = np.fft.fft(gt)
-dft_plotting(k2,dft_signal2,t,gt,"Manual")
-dft_plotting(k2,fft_signal2,t,gt,"inbuilt")
+# dft_plotting(k2,dft_signal2,t,gt,"Manual")
+# dft_plotting(k2,fft_signal2,t,gt,"inbuilt")
 
 def compare_fft(k,fft_signal,dft_signal):
     error = np.abs(fft_signal-dft_signal)
@@ -210,7 +211,122 @@ def compare_fft(k,fft_signal,dft_signal):
     plt.suptitle("Comaprison between DFT and FFT transformation")
     plt.show()
     return max_error
-error1 = compare_fft(k1,fft_signal1,dft_signal1)
-error2 = compare_fft(k2,fft_signal2,dft_signal2)
-print(f"error between dft and fft is {error1} of function f=3sin(2pit) + sin(8pit) + 0.5sin(14pit) \nerror between dft and fft is {error2} of function f = e^(-t^2)")
+# error1 = compare_fft(k1,fft_signal1,dft_signal1)
+# error2 = compare_fft(k2,fft_signal2,dft_signal2)
+# print(f"error between dft and fft is {error1} of function f=3sin(2pit) + sin(8pit) + 0.5sin(14pit) \nerror between dft and fft is {error2} of function f = e^(-t^2)")
     
+##########################################################################################################################
+
+#reflection rotation translation scaling 
+# original complex numbers
+z = [2+1j, -3+2j, -1-3j]
+
+# transformations
+def y_reflection(z): return [-zi.real + zi.imag*1j for zi in z]
+def x_reflection(z): return [zi.real - zi.imag*1j for zi in z]
+def reflection_origin(z): return [-zi.real - zi.imag*1j for zi in z]
+def translation(z, a, b): return [(zi.real+a) + (zi.imag+b)*1j for zi in z]
+def scaling(z, a, b): return [(zi.real*a) + (zi.imag*b)*1j for zi in z]
+
+def rotation(z, theta):
+    angle = M.radians(theta)
+    ans = []
+    for zi in z:
+        x = zi.real*M.cos(angle) - zi.imag*M.sin(angle)
+        y = zi.real*M.sin(angle) + zi.imag*M.cos(angle)
+        ans.append(x + y*1j)
+    return ans
+
+def rotation_and_translation(z, theta, a, b):
+    return translation(rotation(z, theta), a, b)
+
+# plotting function (triangle to triangle)
+def plot_transform(z_before_list, z_after_list, title="Transformation"):
+    # close the triangles by repeating first point
+    zb_real = [p.real for p in z_before_list] + [z_before_list[0].real]
+    zb_imag = [p.imag for p in z_before_list] + [z_before_list[0].imag]
+
+    za_real = [p.real for p in z_after_list] + [z_after_list[0].real]
+    za_imag = [p.imag for p in z_after_list] + [z_after_list[0].imag]
+
+    # plot original triangle
+    plt.plot(zb_real, zb_imag, "o-b", label="Original Triangle")
+
+    # plot transformed triangle
+    plt.plot(za_real, za_imag, "o-r", label="Transformed Triangle")
+
+    # axis setup
+    plt.axhline(0, color="black", linewidth=1.2)
+    plt.axvline(0, color="black", linewidth=1.2)
+    plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.gca().set_aspect("equal", adjustable="box")
+    plt.show()
+
+
+# Example runs
+# plot_transform(z, translation(z, 2, 3), "Translation (a=2, b=3)")
+plot_transform(z, rotation(z, 30), "Rotation (30°)")
+# plot_transform(z, scaling(z, 2, 3), "Scaling (a=2, b=3)")
+# plot_transform(z, y_reflection(z), "Reflection about Y-axis")
+# plot_transform(z, x_reflection(z), "Reflection about X-axis")
+# plot_transform(z, reflection_origin(z), "Reflection about Origin")
+# plot_transform(z, rotation_and_translation(z, 30, 2, 3), 
+#                "Rotation + Translation (θ=30°, a=2, b=3)")
+
+def z_rotate(z,theta):
+    z_rot =[]
+    for zi in z :
+        r = abs(zi)
+        angle = (phase(zi) + M.radians(theta))
+        z_rotated = r*exp(1j*angle)
+        z_rot.append(z_rotated)
+    return z_rot
+plot_transform(z, z_rotate(z, 30), "Rotation (30°) re^(t1 + t2)i")
+
+
+# ------------------------
+# 2-point Gauss Quadrature using for i in range
+# ------------------------
+def gauss2(fn, a, b):
+    nodes = [-1/M.sqrt(3), 1/M.sqrt(3)]  # 2-point nodes
+    weights = [1, 1]                  # 2-point weights
+
+    m = (b - a) / 2
+    n = (a + b) / 2
+
+    result = 0
+    for i in range(len(nodes)):
+        xi = nodes[i]
+        wi = weights[i]
+        x = m*xi + n       # map node to [a,b]
+        result += wi * fn(x)
+    return m * result      # multiply by (b-a)/2
+
+# ------------------------
+# 3-point Gauss Quadrature using for i in range
+# ------------------------
+def gauss3(fn, a, b):
+    nodes = [-M.sqrt(3/5), 0, M.sqrt(3/5)]  # 3-point nodes
+    weights = [5/9, 8/9, 5/9]           # 3-point weights
+
+    m = (b - a) / 2
+    n = (a + b) / 2
+
+    result = 0
+    for i in range(len(nodes)):
+        xi = nodes[i]
+        wi = weights[i]
+        x = m*xi + n
+        result += wi * fn(x)
+    return m * result
+
+
+fn = lambda x: 5*x**3 - 4*x**2 + 7*x + 10
+gn = lambda x: x*M.exp(M.cos(x) + M.sin(x))
+# 2-point Gauss
+print("2-point Gauss:", gauss2(fn, 2, 5))
+
+# 3-point Gauss
+print("3-point Gauss:", gauss3(gn, 0, 1))
